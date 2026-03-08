@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pCloud</title>
+    <link href="../base1/cockpit.css" rel="stylesheet">
+    <link href="pcloud.css" rel="stylesheet">
+    <script src="../base1/cockpit.js"></script>
+</head>
+<body>
+    <div id="pcloud-app" class="pcloud-container">
+        <!-- Header -->
+        <div class="pcloud-header">
+            <h2>pCloud Storage Monitor</h2>
+            <div class="pcloud-header-actions">
+                <span id="region-badge" class="badge badge-info" style="display:none;"></span>
+                <button id="refresh-btn" class="pf-c-button pf-m-secondary btn btn-default" type="button">
+                    Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading state -->
+        <div id="loading-state" class="pcloud-loading">
+            <div class="spinner spinner-lg"></div>
+            <p>Fetching pCloud status...</p>
+        </div>
+
+        <!-- Error state -->
+        <div id="error-state" style="display:none;"></div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" style="display:none;">
+            <div class="pcloud-grid">
+                <!-- Quota card -->
+                <div class="card-pf pcloud-card">
+                    <div class="card-pf-heading">
+                        <h3 class="card-pf-title">Storage Quota</h3>
+                    </div>
+                    <div class="card-pf-body">
+                        <div id="quota-bar-container" class="pcloud-quota-bar-container">
+                            <div class="progress">
+                                <div id="quota-bar" class="progress-bar" role="progressbar"
+                                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                            </div>
+                        </div>
+                        <p id="quota-text" class="pcloud-quota-text"></p>
+                    </div>
+                </div>
+
+                <!-- Account status card -->
+                <div class="card-pf pcloud-card">
+                    <div class="card-pf-heading">
+                        <h3 class="card-pf-title">Account Status</h3>
+                    </div>
+                    <div class="card-pf-body">
+                        <div class="pcloud-info-row">
+                            <span class="pcloud-label">Email</span>
+                            <span id="account-email" class="pcloud-value"></span>
+                        </div>
+                        <div class="pcloud-info-row">
+                            <span class="pcloud-label">Plan</span>
+                            <span id="account-plan" class="pcloud-value"></span>
+                        </div>
+                        <div id="premium-expiry-row" class="pcloud-info-row" style="display:none;">
+                            <span class="pcloud-label">Expires</span>
+                            <span id="account-expiry" class="pcloud-value"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backup verification card -->
+                <div class="card-pf pcloud-card">
+                    <div class="card-pf-heading">
+                        <h3 class="card-pf-title">Backup Verification</h3>
+                    </div>
+                    <div class="card-pf-body">
+                        <div id="backup-status" class="pcloud-backup-status"></div>
+                        <p id="backup-path" class="pcloud-backup-path"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metadata footer -->
+            <div class="pcloud-metadata">
+                <span id="fetched-at"></span>
+            </div>
+        </div>
+    </div>
+
+    <script src="pcloud.js"></script>
+</body>
+</html>
