@@ -57,7 +57,12 @@ region = eu
 backup_path = /BACKUP_V2
 CONF
     chmod 640 "$CONF_SYSTEM"
-    chown root:root "$CONF_SYSTEM"
+    # Allow cockpit-ws group to read the config if it exists, otherwise root only
+    if getent group cockpit-ws >/dev/null 2>&1; then
+        chown root:cockpit-ws "$CONF_SYSTEM"
+    else
+        chown root:root "$CONF_SYSTEM"
+    fi
     echo "  Created $CONF_SYSTEM (token not yet configured)"
 else
     echo "  Configuration file already exists, skipping"

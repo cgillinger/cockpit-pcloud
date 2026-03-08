@@ -7,6 +7,7 @@ Reads pCloud token from config, queries pCloud API, returns JSON to stdout.
 import configparser
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.request
@@ -55,6 +56,13 @@ def read_config():
     return None
 
 
+def _sanitize_error(message, token):
+    """Remove access token from error messages to prevent leaks."""
+    if token and token in str(message):
+        return str(message).replace(token, "***")
+    return str(message)
+
+
 def api_request(host, endpoint, token):
     """Make a GET request to the pCloud API."""
     url = "{}/{}?access_token={}".format(host, endpoint, token)
@@ -65,9 +73,9 @@ def api_request(host, endpoint, token):
     except urllib.error.HTTPError as e:
         output_error("api_error", "HTTP {} {}".format(e.code, e.reason))
     except urllib.error.URLError as e:
-        output_error("network_error", str(e.reason))
+        output_error("network_error", _sanitize_error(e.reason, token))
     except Exception as e:
-        output_error("network_error", str(e))
+        output_error("network_error", _sanitize_error(e, token))
 
 
 def sanitize_path(path):
@@ -103,6 +111,10 @@ def main():
             "See docs/token-setup.md for instructions."
         ))
 
+    # Validate token contains only safe characters (alphanumeric, dashes, underscores)
+    if not re.match(r'^[A-Za-z0-9_-]+$', token):
+        output_error("invalid_token", "Token contains invalid characters.")
+
     region = config.get("pcloud", "region", fallback="eu").strip().lower()
     if region not in API_HOSTS:
         region = "eu"
@@ -137,7 +149,6 @@ def main():
     # Check backup folder
     backup_folder_exists = False
     try:
-        encoded_path = urllib.request.quote(backup_path, safe="")
         folder_url = "listfolder?path={}".format(urllib.request.quote(backup_path, safe="/"))
         folder_data = api_request(host, folder_url, token)
         if folder_data.get("result") == 0:
