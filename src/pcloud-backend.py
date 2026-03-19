@@ -26,7 +26,8 @@ import urllib.request
 from datetime import datetime, timezone
 
 
-CACHE_FILE = "/tmp/cockpit-pcloud-cache.json"
+CACHE_DIR = "/run/cockpit-pcloud"
+CACHE_FILE = "/run/cockpit-pcloud/cache.json"
 DEFAULT_CACHE_SECONDS = 300
 
 CONFIG_PATHS = [
@@ -261,7 +262,9 @@ def read_cache(max_age):
 def write_cache(data):
     """Write data to cache file. Failure is non-critical."""
     try:
-        with open(CACHE_FILE, "w") as f:
+        os.makedirs(CACHE_DIR, mode=0o700, exist_ok=True)
+        fd = os.open(CACHE_FILE, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "w") as f:
             json.dump(data, f)
     except Exception:
         pass
