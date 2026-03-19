@@ -107,7 +107,7 @@ Add to `/etc/cockpit/pcloud.conf`:
 [pcloud]
 kopia_enabled = true
 kopia_container = kopia
-kopia_labels = /sources/synology-photo=photo, /sources/synology-EgenFilm1=EgenFilm
+kopia_labels = /sources/nas-photos=photos, /sources/nas-documents=docs
 kopia_max_age_hours = 25
 ```
 
