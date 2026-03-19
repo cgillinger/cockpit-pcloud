@@ -3,7 +3,7 @@
 ## [2.2.0] — 2026-03-19
 
 ### Fixed
-- Storage quota progress bar not showing color in Cockpit (Cockpit's PatternFly CSS overrode plugin classes; switched to inline `backgroundColor` style)
+- Storage quota progress bar invisible on newer Cockpit versions: `base1/cockpit.css` (PatternFly/Bootstrap) does not exist in current Cockpit installations and returned 404, causing the `.progress-bar` element to collapse to 0px height. Fixed by adding `height: 100%` directly in `pcloud.css` and removing the broken CSS reference from `index.html` — the plugin is now self-sufficient and does not depend on external Cockpit stylesheets
 
 ### Added
 - Server-side response caching (default 5 minutes, configurable via `cache_seconds` in `pcloud.conf`)
