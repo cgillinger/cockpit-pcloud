@@ -74,9 +74,9 @@ Per-user configuration is also supported at `~/.config/cockpit/pcloud.conf`.
 
 ## Getting a pCloud Token
 
-See [docs/token-setup.md](docs/token-setup.md) for a step-by-step guide.
+See [docs/token-setup.md](docs/token-setup.md) for full instructions.
 
-In short: create an app at [pCloud My Apps](https://docs.pcloud.com/my_apps/), authorize it via the OAuth2 flow, and paste the resulting token into your config file.
+The recommended method is the OAuth2 authorization code flow: create an app at [pCloud My Apps](https://docs.pcloud.com/my_apps/), open the authorize URL with `response_type=code`, copy the code from the redirect URL, then exchange it for an access token via `curl`. Paste the resulting `access_token` into your config file.
 
 ## Security
 
