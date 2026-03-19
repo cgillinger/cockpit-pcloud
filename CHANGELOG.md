@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.0] — 2026-03-19
+
+### Added
+- Kopia backup snapshot status in Backup Verification card
+- Shows latest snapshot time, size, file count, and health status per source
+- Configurable labels, max age threshold, and container name via `pcloud.conf`
+- Graceful degradation when Kopia is unavailable (docker not found, container not running, timeout)
+- `kopia_enabled`, `kopia_container`, `kopia_labels`, `kopia_max_age_hours` config options
+- "Kopia Snapshots" toggle in Settings panel
+
+---
+
 ## [2.0.0] — 2026-03-19
 
 ### Added

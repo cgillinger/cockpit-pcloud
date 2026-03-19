@@ -16,6 +16,7 @@ import json
 import os
 import re
 import socket
+import subprocess
 import sys
 import urllib.error
 import urllib.parse
@@ -238,6 +239,104 @@ def get_recent_activity(host, token):
     return activity, None
 
 
+def _parse_kopia_datetime(dt_str):
+    """Parse a Kopia ISO 8601 datetime string to a UTC-aware datetime object."""
+    if not dt_str:
+        return None
+    try:
+        s = dt_str
+        if s.endswith("Z"):
+            s = s[:-1]
+        if "." in s:
+            s = s[:s.index(".")]
+        return datetime.strptime(s, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
+    except (ValueError, TypeError):
+        return None
+
+
+def get_kopia_snapshots(container, labels, max_age_hours):
+    """Fetch latest Kopia snapshot per source via Docker CLI.
+
+    Returns a dict: {"available": True, "snapshots": [...]}
+    or {"available": False, "error": "..."} on failure.
+    Never raises — all errors are caught and returned as available=False.
+    """
+    try:
+        proc = subprocess.run(
+            ["docker", "exec", container, "kopia", "snapshot", "list", "--all", "--json"],
+            capture_output=True, text=True, timeout=15,
+        )
+        if proc.returncode != 0:
+            return {"available": False, "error": "kopia command failed"}
+
+        snapshots = json.loads(proc.stdout)
+
+        # Group by source path, keep latest startTime per path
+        latest = {}
+        for snap in snapshots:
+            path = snap.get("source", {}).get("path", "")
+            start = snap.get("startTime", "")
+            if path not in latest or start > latest[path].get("startTime", ""):
+                latest[path] = snap
+
+        now = datetime.now(timezone.utc)
+        result_snapshots = []
+
+        for path, snap in latest.items():
+            start_time_str = snap.get("startTime", "")
+            end_time_str = snap.get("endTime") or ""
+
+            # Determine status
+            if not end_time_str:
+                status = "in_progress"
+                age_hours = 0.0
+            else:
+                start_dt = _parse_kopia_datetime(start_time_str)
+                if start_dt is None:
+                    status = "stale"
+                    age_hours = 0.0
+                else:
+                    age_hours = (now - start_dt).total_seconds() / 3600.0
+                    status = "ok" if age_hours < max_age_hours else "stale"
+
+            # Size / file count from rootEntry.summ
+            summ = snap.get("rootEntry", {}).get("summ", {})
+            size_bytes = summ.get("size", 0)
+            file_count = summ.get("files", 0)
+
+            # Label: from config map, else last path segment
+            label = labels.get(path, path.split("/")[-1] if path else path)
+
+            # Normalise last_time to compact UTC string (no microseconds)
+            start_dt_norm = _parse_kopia_datetime(start_time_str)
+            if start_dt_norm:
+                last_time = start_dt_norm.strftime("%Y-%m-%dT%H:%M:%SZ")
+            else:
+                last_time = start_time_str
+
+            result_snapshots.append({
+                "source": path,
+                "label": label,
+                "last_time": last_time,
+                "age_hours": round(age_hours, 1),
+                "size_bytes": size_bytes,
+                "size_display": format_size(size_bytes),
+                "file_count": file_count,
+                "status": status,
+            })
+
+        # Sort most-recent first
+        result_snapshots.sort(key=lambda s: s["last_time"], reverse=True)
+        return {"available": True, "snapshots": result_snapshots}
+
+    except FileNotFoundError:
+        return {"available": False, "error": "docker not found"}
+    except subprocess.TimeoutExpired:
+        return {"available": False, "error": "timeout"}
+    except Exception as e:
+        return {"available": False, "error": str(e)}
+
+
 def main():
     skip_folders = "--skip-folders" in sys.argv[1:]
 
@@ -279,6 +378,28 @@ def main():
 
     show_trash_str = config.get("pcloud", "show_trash", fallback="true").strip().lower()
     show_trash = show_trash_str != "false"
+
+    # Kopia integration config (all optional)
+    kopia_enabled_str = config.get("pcloud", "kopia_enabled", fallback="true").strip().lower()
+    kopia_enabled = kopia_enabled_str != "false"
+
+    kopia_container = config.get("pcloud", "kopia_container", fallback="kopia").strip() or "kopia"
+
+    kopia_labels_raw = config.get("pcloud", "kopia_labels", fallback="").strip()
+    kopia_labels = {}
+    if kopia_labels_raw:
+        for pair in kopia_labels_raw.split(","):
+            pair = pair.strip()
+            if "=" in pair:
+                k, v = pair.split("=", 1)
+                kopia_labels[k.strip()] = v.strip()
+
+    try:
+        kopia_max_age_hours = float(
+            config.get("pcloud", "kopia_max_age_hours", fallback="25").strip()
+        )
+    except (ValueError, TypeError):
+        kopia_max_age_hours = 25.0
 
     # Fetch user info (required — exits on failure)
     userinfo = api_request(host, "userinfo", token)
@@ -374,6 +495,12 @@ def main():
     if trash_display is not None:
         result["trash_display"] = trash_display
         result["trash_size_bytes"] = trash_size_bytes
+
+    # Kopia snapshot status (optional, fully graceful)
+    if kopia_enabled:
+        result["kopia"] = get_kopia_snapshots(
+            kopia_container, kopia_labels, kopia_max_age_hours
+        )
 
     output_json(result)
 

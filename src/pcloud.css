@@ -473,6 +473,66 @@
     white-space: nowrap;
 }
 
+/* ── Kopia Snapshots ── */
+
+.kopia-snapshots-header {
+    margin-top: 14px;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4d5258;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.kopia-snapshot-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    overflow-x: auto;
+    display: block;
+}
+
+.kopia-snapshot-row {
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.kopia-snapshot-row:last-child {
+    border-bottom: none;
+}
+
+.kopia-td-label {
+    padding: 6px 10px 6px 4px;
+    font-weight: 500;
+    color: #151515;
+    white-space: nowrap;
+}
+
+.kopia-td-time {
+    padding: 6px 10px;
+    color: #4d5258;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.kopia-td-status {
+    padding: 6px 10px;
+    text-align: center;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.kopia-td-size {
+    padding: 6px 4px 6px 10px;
+    text-align: right;
+    white-space: nowrap;
+    color: #4d5258;
+}
+
+.kopia-status-ok     { color: #3f9c35; }
+.kopia-status-stale  { color: #cc0000; }
+.kopia-status-progress { color: #ec7a08; }
+
 /* ── Responsive ── */
 
 @media (min-width: 640px) {
