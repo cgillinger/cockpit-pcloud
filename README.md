@@ -16,6 +16,7 @@ Built for the self-hosted and homelab community. Works with any pCloud account (
 - **Trash size estimate** — shows approximate trash usage below the quota bar
 - **Account status** — displays email, Premium/Free badge, and subscription expiry date
 - **Backup folder verification** — confirms your backup directory exists on pCloud
+- **Kopia backup status** — shows latest snapshot time, size, and health for each backup source (requires Kopia running in Docker)
 - **Folder Sizes card** — lists every top-level pCloud folder with size, file count, and a proportional progress bar
 - **Recent Activity card** — latest file changes (create / modify / delete) with relative timestamps (requires diff API support)
 - **Settings panel** — ⚙ gear icon opens a dropdown to show/hide any dashboard section; per-folder visibility toggles; all preferences saved in `localStorage`
@@ -88,6 +89,42 @@ backup_path = /BACKUP_V2
 The configuration file is created automatically by `install.sh` with permissions `640` (readable only by root).
 
 Per-user configuration is also supported at `~/.config/cockpit/pcloud.conf`.
+
+## Kopia Integration (Optional)
+
+If you run [Kopia](https://kopia.io/) as a Docker container for backups, cockpit-pcloud can display the status of your latest snapshots directly in the Backup Verification card.
+
+### Requirements
+
+- Kopia running as a Docker container (default name: `kopia`)
+- The Cockpit user must have Docker access (typically via the `docker` group or superuser)
+
+### Configuration
+
+Add to `/etc/cockpit/pcloud.conf`:
+
+```ini
+[pcloud]
+kopia_enabled = true
+kopia_container = kopia
+kopia_labels = /sources/synology-photo=photo, /sources/synology-EgenFilm1=EgenFilm
+kopia_max_age_hours = 25
+```
+
+| Key                  | Description                                                          | Default  |
+|----------------------|----------------------------------------------------------------------|----------|
+| `kopia_enabled`      | Enable Kopia snapshot status (`true`/`false`)                        | `true`   |
+| `kopia_container`    | Docker container name for Kopia                                      | `kopia`  |
+| `kopia_labels`       | Comma-separated `path=label` pairs for snapshot sources              | *(empty)*|
+| `kopia_max_age_hours`| Hours before a snapshot is marked as stale                           | `25`     |
+
+If `kopia_labels` is not set, source paths are used as labels automatically (last path segment).
+
+### Without Kopia
+
+If Kopia is not installed or `kopia_enabled = false`, the plugin works normally — the Backup Verification card simply shows whether the backup directory exists on pCloud.
+
+> **Note:** The screenshot in this README predates the Kopia integration and should be updated.
 
 ## Getting a pCloud Token
 

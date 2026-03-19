@@ -12,6 +12,7 @@
         { key: "folder-sizes",        label: "Folder Sizes" },
         { key: "trash-size",          label: "Trash Size" },
         { key: "recent-activity",     label: "Recent Activity" },
+        { key: "kopia-snapshots",     label: "Kopia Snapshots" },
     ];
 
     // Module-level state
@@ -99,6 +100,14 @@
         if (actCard) {
             var hasActivity = lastData.recent_activity && lastData.recent_activity.length > 0;
             actCard.style.display = (sections["recent-activity"] && hasActivity) ? "" : "none";
+        }
+
+        // Kopia snapshots — within the backup verification card
+        var kopiaSection = document.getElementById("kopia-snapshots-section");
+        if (kopiaSection) {
+            var kopiaAvailable = lastData.kopia && lastData.kopia.available &&
+                lastData.kopia.snapshots && lastData.kopia.snapshots.length > 0;
+            kopiaSection.style.display = (sections["kopia-snapshots"] && kopiaAvailable) ? "" : "none";
         }
     }
 
@@ -243,6 +252,59 @@
                 container.appendChild(folderSubList);
             }
         });
+    }
+
+    // --- Kopia snapshot rendering ---
+
+    function renderKopiaSnapshots(data) {
+        var section = document.getElementById("kopia-snapshots-section");
+        var content = document.getElementById("kopia-snapshots-content");
+        if (!section || !content) return;
+
+        var kopia = data.kopia;
+        if (!kopia || !kopia.available || !kopia.snapshots || kopia.snapshots.length === 0) {
+            hide(section);
+            return;
+        }
+
+        var html = '<table class="kopia-snapshot-table"><tbody>';
+
+        kopia.snapshots.forEach(function(snap, idx) {
+            var rowCls = (idx % 2 === 1) ? " pcloud-row-alt" : "";
+
+            // Format datetime as MM-DD HH:MM (UTC)
+            var timeStr = snap.last_time || "";
+            try {
+                var dt = new Date(snap.last_time);
+                if (!isNaN(dt.getTime())) {
+                    var mo = String(dt.getUTCMonth() + 1).padStart(2, "0");
+                    var dy = String(dt.getUTCDate()).padStart(2, "0");
+                    var hr = String(dt.getUTCHours()).padStart(2, "0");
+                    var mn = String(dt.getUTCMinutes()).padStart(2, "0");
+                    timeStr = mo + "-" + dy + " " + hr + ":" + mn;
+                }
+            } catch (e) {}
+
+            var statusIcon, statusCls;
+            if (snap.status === "ok") {
+                statusIcon = "&#10003;"; statusCls = "kopia-status-ok";
+            } else if (snap.status === "stale") {
+                statusIcon = "&#10007;"; statusCls = "kopia-status-stale";
+            } else {
+                statusIcon = "&#9203;"; statusCls = "kopia-status-progress";
+            }
+
+            html += '<tr class="kopia-snapshot-row' + rowCls + '">';
+            html += '<td class="kopia-td-label">' + escapeHtml(snap.label) + '</td>';
+            html += '<td class="kopia-td-time">' + escapeHtml(timeStr) + '</td>';
+            html += '<td class="kopia-td-status"><span class="' + statusCls + '">' + statusIcon + '</span></td>';
+            html += '<td class="kopia-td-size">' + escapeHtml(snap.size_display) + '</td>';
+            html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+        content.innerHTML = html;
+        show(section);
     }
 
     // --- Loading / Error states ---
@@ -426,6 +488,9 @@
             html += '</ul>';
             actContent.innerHTML = html;
         }
+
+        // Kopia snapshots
+        renderKopiaSnapshots(data);
 
         // Rebuild settings panel now that folder data is available
         buildSettingsPanel();
