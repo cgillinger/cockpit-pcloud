@@ -74,6 +74,7 @@ backup_path = /BACKUP_V2
 | `backup_path`     | Path on pCloud to verify exists                           | `/BACKUP_V2`  |
 | `hidden_folders`  | Comma-separated folder names to exclude server-side       | *(empty)*     |
 | `show_trash`      | Calculate and display trash estimate (`true`/`false`)     | `true`        |
+| `cache_seconds`   | How long to cache backend responses in seconds            | `300`         |
 
 Example with all options:
 
@@ -84,6 +85,7 @@ region = eu
 backup_path = /BACKUP_V2
 # hidden_folders = OneDrive, Applications
 # show_trash = true
+# cache_seconds = 300
 ```
 
 The configuration file is created automatically by `install.sh` with permissions `640` (readable only by root).

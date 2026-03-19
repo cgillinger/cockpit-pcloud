@@ -4,11 +4,12 @@ pcloud-backend.py — Backend script for cockpit-pcloud plugin.
 Reads pCloud token from config, queries pCloud API, returns JSON to stdout.
 
 Usage:
-  python3 pcloud-backend.py [--skip-folders]
+  python3 pcloud-backend.py [--skip-folders] [--force-refresh]
 
 Arguments:
   --skip-folders    Skip the recursive folder listing (expensive operation).
                     Use when Folder Sizes card is hidden in the frontend.
+  --force-refresh   Bypass the server-side cache and fetch fresh data.
 """
 
 import configparser
@@ -18,11 +19,15 @@ import re
 import socket
 import subprocess
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 
+
+CACHE_FILE = "/tmp/cockpit-pcloud-cache.json"
+DEFAULT_CACHE_SECONDS = 300
 
 CONFIG_PATHS = [
     "/etc/cockpit/pcloud.conf",
@@ -239,6 +244,29 @@ def get_recent_activity(host, token):
     return activity, None
 
 
+def read_cache(max_age):
+    """Return cached JSON data if fresh enough, otherwise None."""
+    try:
+        if not os.path.isfile(CACHE_FILE):
+            return None
+        age = time.time() - os.path.getmtime(CACHE_FILE)
+        if age > max_age:
+            return None
+        with open(CACHE_FILE) as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+def write_cache(data):
+    """Write data to cache file. Failure is non-critical."""
+    try:
+        with open(CACHE_FILE, "w") as f:
+            json.dump(data, f)
+    except Exception:
+        pass
+
+
 def _parse_kopia_datetime(dt_str):
     """Parse a Kopia ISO 8601 datetime string to a UTC-aware datetime object."""
     if not dt_str:
@@ -339,6 +367,7 @@ def get_kopia_snapshots(container, labels, max_age_hours):
 
 def main():
     skip_folders = "--skip-folders" in sys.argv[1:]
+    force_refresh = "--force-refresh" in sys.argv[1:]
 
     config = read_config()
     if config is None:
@@ -400,6 +429,20 @@ def main():
         )
     except (ValueError, TypeError):
         kopia_max_age_hours = 25.0
+
+    try:
+        cache_seconds = int(
+            config.get("pcloud", "cache_seconds", fallback=str(DEFAULT_CACHE_SECONDS)).strip()
+        )
+    except (ValueError, TypeError):
+        cache_seconds = DEFAULT_CACHE_SECONDS
+
+    # Serve from cache if fresh and not explicitly bypassed
+    if not force_refresh and not skip_folders:
+        cached = read_cache(cache_seconds)
+        if cached is not None:
+            cached["cached"] = True
+            output_json(cached)  # exits here
 
     # Fetch user info (required — exits on failure)
     userinfo = api_request(host, "userinfo", token)
@@ -502,6 +545,9 @@ def main():
             kopia_container, kopia_labels, kopia_max_age_hours
         )
 
+    result["cached"] = False
+    if not skip_folders:
+        write_cache(result)
     output_json(result)
 
 

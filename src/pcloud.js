@@ -387,14 +387,15 @@
         if (quotaBar) {
             quotaBar.style.width = percent + "%";
             quotaBar.setAttribute("aria-valuenow", percent);
-            quotaBar.classList.remove("progress-bar-success", "progress-bar-warning", "progress-bar-danger");
+            var barColor;
             if (percent > 85) {
-                quotaBar.classList.add("progress-bar-danger");
+                barColor = "#cc0000";
             } else if (percent > 60) {
-                quotaBar.classList.add("progress-bar-warning");
+                barColor = "#ec7a08";
             } else {
-                quotaBar.classList.add("progress-bar-success");
+                barColor = "#3f9c35";
             }
+            quotaBar.style.backgroundColor = barColor;
         }
 
         var totalDisplay = data.quota_total_gb >= 1024
@@ -501,19 +502,23 @@
         // Metadata footer
         var fetchedAt = data.fetched_at;
         try { fetchedAt = new Date(fetchedAt).toLocaleTimeString(); } catch (e) {}
+        var cacheNote = data.cached ? " (cached)" : "";
         var fetchedAtEl = document.getElementById("fetched-at");
-        if (fetchedAtEl) fetchedAtEl.textContent = "Last updated: " + fetchedAt;
+        if (fetchedAtEl) fetchedAtEl.textContent = "Last updated: " + fetchedAt + cacheNote;
     }
 
     // --- Data fetch ---
 
-    function fetchPCloudStatus() {
+    function fetchPCloudStatus(forceRefresh) {
         showLoadingState();
 
         var sections = loadVisibleSections();
         var args = ["python3", BACKEND_PATH];
         if (!sections["folder-sizes"]) {
             args.push("--skip-folders");
+        }
+        if (forceRefresh) {
+            args.push("--force-refresh");
         }
 
         cockpit.spawn(args, { superuser: "try" })
@@ -564,7 +569,9 @@
             });
         }
 
-        fetchPCloudStatus();
-        document.getElementById("refresh-btn").addEventListener("click", fetchPCloudStatus);
+        fetchPCloudStatus(false);
+        document.getElementById("refresh-btn").addEventListener("click", function() {
+            fetchPCloudStatus(true);
+        });
     });
 })();
