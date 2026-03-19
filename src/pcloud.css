@@ -67,10 +67,12 @@
 }
 
 .pcloud-quota-bar-container .progress-bar {
+    height: 100%;
     transition: width 0.4s ease;
     line-height: 22px;
     font-size: 12px;
     min-width: 2%;
+    border-radius: 2px;
 }
 
 .pcloud-quota-text {
