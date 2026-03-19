@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.2.0] — 2026-03-19
+
+### Fixed
+- Storage quota progress bar not showing color in Cockpit (Cockpit's PatternFly CSS overrode plugin classes; switched to inline `backgroundColor` style)
+
+### Added
+- Server-side response caching (default 5 minutes, configurable via `cache_seconds` in `pcloud.conf`)
+- Refresh button bypasses cache via `--force-refresh` flag
+- `(cached)` indicator in footer when displaying cached data
+
+---
+
 ## [2.1.0] — 2026-03-19
 
 ### Added

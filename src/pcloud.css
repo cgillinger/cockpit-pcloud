@@ -73,18 +73,6 @@
     min-width: 2%;
 }
 
-.progress-bar-success {
-    background-color: #3f9c35;
-}
-
-.progress-bar-warning {
-    background-color: #ec7a08;
-}
-
-.progress-bar-danger {
-    background-color: #cc0000;
-}
-
 .pcloud-quota-text {
     margin: 8px 0 0;
     font-size: 14px;
