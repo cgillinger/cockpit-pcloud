@@ -177,12 +177,9 @@ Should work on any Linux distribution that runs Cockpit 200+ and Python 3.6+.
 
 ## Contributing
 
-Contributions are welcome! Feel free to open issues or submit pull requests.
+This is a personal project built primarily for my own use — the goal is simply that it works for me. I make no promises about roadmaps, feature requests, or response times on issues.
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+That said, you are welcome to fork the repository and adapt it however you like. If you find it useful as a starting point for your own setup, great.
 
 ## License
 
