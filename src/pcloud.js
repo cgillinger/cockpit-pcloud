@@ -395,7 +395,8 @@
             } else {
                 barColor = "#3f9c35";
             }
-            quotaBar.style.backgroundColor = barColor;
+            quotaBar.style.setProperty("background-color", barColor, "important");
+            quotaBar.style.setProperty("background-image", "none", "important");
         }
 
         var totalDisplay = data.quota_total_gb >= 1024
