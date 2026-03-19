@@ -64,14 +64,14 @@ Edit `/etc/cockpit/pcloud.conf`:
 [pcloud]
 token = YOUR_PCLOUD_ACCESS_TOKEN
 region = eu
-backup_path = /BACKUP_V2
+backup_path = /Backups          # change to your actual pCloud backup folder name
 ```
 
 | Key               | Description                                               | Default       |
 |-------------------|-----------------------------------------------------------|---------------|
 | `token`           | pCloud OAuth2 access token (required)                     | *(empty)*     |
 | `region`          | `eu` for European servers, `us` for US servers            | `eu`          |
-| `backup_path`     | Path on pCloud to verify exists                           | `/BACKUP_V2`  |
+| `backup_path`     | The pCloud folder path where your backups land. The plugin checks that this folder exists so you can confirm backups are arriving. Change it to match whatever folder your backup tool creates — e.g. `/Backups`, `/NAS-backup`, etc. | `/BACKUP_V2`  |
 | `hidden_folders`  | Comma-separated folder names to exclude server-side       | *(empty)*     |
 | `show_trash`      | Calculate and display trash estimate (`true`/`false`)     | `true`        |
 | `cache_seconds`   | How long to cache backend responses in seconds            | `300`         |
@@ -82,7 +82,7 @@ Example with all options:
 [pcloud]
 token = YOUR_PCLOUD_ACCESS_TOKEN
 region = eu
-backup_path = /BACKUP_V2
+backup_path = /Backups          # the pCloud folder your backup tool writes to
 # hidden_folders = OneDrive, Applications
 # show_trash = true
 # cache_seconds = 300
