@@ -91,6 +91,12 @@
     color: #4d5258;
 }
 
+.pcloud-trash-text {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #72767b;
+}
+
 /* Info rows */
 .pcloud-info-row {
     display: flex;
@@ -252,7 +258,229 @@
     margin: 6px 0;
 }
 
-/* Responsive */
+/* ── Settings panel ── */
+
+.pcloud-settings-wrapper {
+    position: relative;
+}
+
+.pcloud-settings-btn {
+    font-size: 18px;
+    line-height: 1;
+    padding: 4px 10px;
+    cursor: pointer;
+    border: 1px solid #c5c5c5;
+    border-radius: 2px;
+    background: #fff;
+    color: #4d5258;
+}
+
+.pcloud-settings-btn:hover {
+    background: #f0f0f0;
+    color: #151515;
+}
+
+.pcloud-settings-panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    z-index: 200;
+    min-width: 240px;
+    background: #fff;
+    border: 1px solid #d1d1d1;
+    border-radius: 2px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    padding: 0 0 8px;
+}
+
+.pcloud-settings-header {
+    padding: 10px 12px 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4d5258;
+    border-bottom: 1px solid #ededed;
+    margin-bottom: 4px;
+}
+
+.pcloud-settings-row {
+    display: flex;
+    align-items: center;
+    padding: 5px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #151515;
+    user-select: none;
+}
+
+.pcloud-settings-row:hover {
+    background: #f5f5f5;
+}
+
+.pcloud-settings-cb {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+/* Per-folder sub-list */
+.pcloud-settings-folder-list {
+    padding-left: 20px;
+    border-left: 2px solid #ededed;
+    margin: 0 12px 4px 24px;
+}
+
+.pcloud-settings-folder-row {
+    font-size: 13px;
+    color: #4d5258;
+    padding: 3px 8px;
+}
+
+.pcloud-settings-no-data {
+    font-size: 12px;
+    color: #72767b;
+    margin: 4px 0;
+    padding: 0 8px;
+}
+
+/* ── Folder Sizes card ── */
+
+.pcloud-card-wide {
+    /* span 2 columns on wider layouts */
+}
+
+.pcloud-folder-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.pcloud-folder-table thead th {
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: #72767b;
+    padding: 0 8px 6px;
+    border-bottom: 1px solid #ededed;
+}
+
+.pcloud-th-size,
+.pcloud-th-files {
+    text-align: right;
+}
+
+.pcloud-folder-row {
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.pcloud-row-alt {
+    background-color: #f9f9f9;
+}
+
+.pcloud-folder-row:last-child {
+    border-bottom: none;
+}
+
+.pcloud-td-name {
+    padding: 8px 8px 6px;
+}
+
+.pcloud-td-size {
+    padding: 8px 8px 6px;
+    text-align: right;
+    white-space: nowrap;
+    color: #4d5258;
+}
+
+.pcloud-td-files {
+    padding: 8px 8px 6px;
+    text-align: right;
+    white-space: nowrap;
+    color: #72767b;
+    font-size: 12px;
+}
+
+.pcloud-folder-name {
+    font-size: 14px;
+    color: #151515;
+    margin-bottom: 3px;
+}
+
+/* Thin progress bar per folder row */
+.pcloud-bar-wrap {
+    height: 6px;
+    background: #ededed;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.pcloud-bar-fill {
+    height: 100%;
+    background: #0066cc;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+    min-width: 0;
+}
+
+.pcloud-no-data {
+    color: #72767b;
+    font-size: 13px;
+    margin: 0;
+}
+
+/* ── Recent Activity card ── */
+
+.pcloud-activity-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pcloud-activity-item {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 5px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+}
+
+.pcloud-activity-item:last-child {
+    border-bottom: none;
+}
+
+.pcloud-act-icon {
+    flex-shrink: 0;
+    font-weight: 700;
+    width: 16px;
+    text-align: center;
+}
+
+.pcloud-act-create  { color: #3f9c35; }
+.pcloud-act-delete  { color: #cc0000; }
+.pcloud-act-modify  { color: #0066cc; }
+
+.pcloud-act-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #151515;
+}
+
+.pcloud-act-time {
+    flex-shrink: 0;
+    font-size: 12px;
+    color: #72767b;
+    white-space: nowrap;
+}
+
+/* ── Responsive ── */
+
+@media (min-width: 640px) {
+    .pcloud-card-wide {
+        grid-column: span 2;
+    }
+}
+
 @media (max-width: 600px) {
     .pcloud-container {
         padding: 12px;
@@ -265,5 +493,9 @@
 
     .pcloud-grid {
         grid-template-columns: 1fr;
+    }
+
+    .pcloud-card-wide {
+        grid-column: span 1;
     }
 }
