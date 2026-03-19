@@ -65,7 +65,8 @@ def _sanitize_error(message, token):
 
 def api_request(host, endpoint, token):
     """Make a GET request to the pCloud API."""
-    url = "{}/{}?access_token={}".format(host, endpoint, token)
+    sep = "&" if "?" in endpoint else "?"
+    url = "{}/{}{}access_token={}".format(host, endpoint, sep, token)
     req = urllib.request.Request(url)
     try:
         with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:

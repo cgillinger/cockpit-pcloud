@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.1] — 2026-03-19
+
+### Fixed
+- Backup verification always failing due to malformed API URL (double `?` in query string)
+
+### Improved
+- Token setup documentation rewritten with authorization code flow as primary method
+- Added troubleshooting section for common OAuth2 errors
+
+---
+
 ## [1.0.0] — 2026-03-08
 
 ### Added
