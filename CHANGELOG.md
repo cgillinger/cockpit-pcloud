@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.0.0] — 2026-03-19
+
+### Added
+- Folder Sizes card — shows size, file count, and quota proportion for each top-level pCloud folder
+- Trash size estimate displayed in Storage Quota card (calculated as `usedquota − sum of all listed files`)
+- Recent Activity card showing latest file changes (if pCloud diff API supports OAuth tokens)
+- Settings panel (⚙ gear icon) with show/hide toggles for all dashboard sections
+- Per-folder visibility toggles in Folder Sizes settings, persisted in `localStorage`
+- `hidden_folders` config option in `pcloud.conf` for server-side folder filtering
+- `show_trash` config option in `pcloud.conf` (default: `true`)
+- `--skip-folders` CLI argument for backend — skips expensive recursive listing when Folder Sizes is hidden
+- `quota_total_bytes` and `quota_used_bytes` fields in backend JSON output
+
+### Fixed
+- Backup folder check now uses `urllib.parse.quote` (stdlib) instead of the non-existent `urllib.request.quote`
+
+---
+
 ## [1.0.1] — 2026-03-19
 
 ### Fixed

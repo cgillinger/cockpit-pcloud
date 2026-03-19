@@ -13,8 +13,12 @@ Built for the self-hosted and homelab community. Works with any pCloud account (
 ## Features
 
 - **Storage quota overview** — visual progress bar showing used vs. total space with color-coded thresholds
+- **Trash size estimate** — shows approximate trash usage below the quota bar
 - **Account status** — displays email, Premium/Free badge, and subscription expiry date
 - **Backup folder verification** — confirms your backup directory exists on pCloud
+- **Folder Sizes card** — lists every top-level pCloud folder with size, file count, and a proportional progress bar
+- **Recent Activity card** — latest file changes (create / modify / delete) with relative timestamps (requires diff API support)
+- **Settings panel** — ⚙ gear icon opens a dropdown to show/hide any dashboard section; per-folder visibility toggles; all preferences saved in `localStorage`
 - **EU and US region support** — works with both `eapi.pcloud.com` and `api.pcloud.com`
 - **Secure token handling** — access token stored server-side with restricted file permissions, never exposed to the browser
 - **Zero external dependencies** — uses only Python stdlib and vanilla JavaScript
@@ -62,11 +66,24 @@ region = eu
 backup_path = /BACKUP_V2
 ```
 
-| Key           | Description                                      | Default       |
-|---------------|--------------------------------------------------|---------------|
-| `token`       | pCloud OAuth2 access token (required)            | *(empty)*     |
-| `region`      | `eu` for European servers, `us` for US servers   | `eu`          |
-| `backup_path` | Path on pCloud to verify exists                  | `/BACKUP_V2`  |
+| Key               | Description                                               | Default       |
+|-------------------|-----------------------------------------------------------|---------------|
+| `token`           | pCloud OAuth2 access token (required)                     | *(empty)*     |
+| `region`          | `eu` for European servers, `us` for US servers            | `eu`          |
+| `backup_path`     | Path on pCloud to verify exists                           | `/BACKUP_V2`  |
+| `hidden_folders`  | Comma-separated folder names to exclude server-side       | *(empty)*     |
+| `show_trash`      | Calculate and display trash estimate (`true`/`false`)     | `true`        |
+
+Example with all options:
+
+```ini
+[pcloud]
+token = YOUR_PCLOUD_ACCESS_TOKEN
+region = eu
+backup_path = /BACKUP_V2
+# hidden_folders = OneDrive, Applications
+# show_trash = true
+```
 
 The configuration file is created automatically by `install.sh` with permissions `640` (readable only by root).
 
